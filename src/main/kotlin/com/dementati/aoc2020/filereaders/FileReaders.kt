@@ -8,6 +8,10 @@ fun inputAsString(day: Int): String {
 }
 
 fun inputAsLines(day: Int): List<String> {
-    val path = "input/day$day/input.txt"
+    return inputAsLines(day, "input")
+}
+
+fun inputAsLines(day: Int, name: String): List<String> {
+    val path = "input/day$day/$name.txt"
     return File(path).readLines()
 }
