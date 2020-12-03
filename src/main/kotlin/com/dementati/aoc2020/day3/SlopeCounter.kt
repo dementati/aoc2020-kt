@@ -1,6 +1,6 @@
 package com.dementati.aoc2020.day3
 
-fun countSlopes(lines: List<String>): Int {
+fun countSlopes(lines: List<String>): Long {
     val slopes = listOf(
         1 to 1,
         3 to 1,
