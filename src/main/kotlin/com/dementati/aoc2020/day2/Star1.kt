@@ -1,6 +1,6 @@
 package com.dementati.aoc2020.day2
 
-import com.dementati.aoc2015.inputAsLines
+import com.dementati.aoc2020.filereaders.inputAsLines
 
 fun main() {
     val pattern = "(\\d+)-(\\d+) ([a-z]): ([a-z]+)".toRegex()

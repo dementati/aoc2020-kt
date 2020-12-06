@@ -1,7 +1,7 @@
 package com.dementati.aoc2020.day4
 
-import com.dementati.aoc2015.inputAsString
+import com.dementati.aoc2020.filereaders.inputAsLineGroups
 
 fun main() {
-    println(countValidPassports(inputAsString(4)))
+    println(countValidPassports(inputAsLineGroups(4)))
 }

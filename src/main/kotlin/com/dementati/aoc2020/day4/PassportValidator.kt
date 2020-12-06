@@ -2,55 +2,53 @@ package com.dementati.aoc2020.day4
 
 import java.lang.IllegalArgumentException
 
-fun countValidPassports(input: String): Int {
+fun countValidPassports(lineGroups: List<String>): Int {
     val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
 
-    return input.trim().split("""(\r\n\r\n)|(\n\n)""".toRegex())
-        .filter { line ->
-            val fields = HashMap<String, String>()
-            line.split("""\s+""".toRegex())
-                .forEach {
-                    val parts = it.split(":")
-                    if (parts.toList().size != 2) {
-                        throw IllegalArgumentException("Invalid format on field $it from passport spec $line")
-                    }
-                    val (k, v) = parts
-                    fields[k] = v
+    return lineGroups.filter { line ->
+        val fields = HashMap<String, String>()
+        line.split("""\s+""".toRegex())
+            .forEach {
+                val parts = it.split(":")
+                if (parts.toList().size != 2) {
+                    throw IllegalArgumentException("Invalid format on field $it from passport spec $line")
                 }
+                val (k, v) = parts
+                fields[k] = v
+            }
 
-            fields.keys.containsAll(required)
-        }
-        .toList()
-        .size
+        fields.keys.containsAll(required)
+    }
+    .toList()
+    .size
 }
 
-fun countValidPassports2(input: String): Int {
+fun countValidPassports2(lineGroups: List<String>): Int {
     val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
 
-    return input.trim().split("""(\r\n\r\n)|(\n\n)""".toRegex())
-        .filter { line ->
-            val fields = HashMap<String, String>()
-            line.split("""\s+""".toRegex())
-                .forEach {
-                    val parts = it.split(":")
-                    if (parts.toList().size != 2) {
-                        throw IllegalArgumentException("Invalid format on field $it from passport spec $line")
-                    }
-                    val (k, v) = parts
-                    fields[k] = v
+    return lineGroups.filter { line ->
+        val fields = HashMap<String, String>()
+        line.split("""\s+""".toRegex())
+            .forEach {
+                val parts = it.split(":")
+                if (parts.toList().size != 2) {
+                    throw IllegalArgumentException("Invalid format on field $it from passport spec $line")
                 }
+                val (k, v) = parts
+                fields[k] = v
+            }
 
-            fields.keys.containsAll(required)
-                && validateYear(fields["byr"]!!, 1920, 2002)
-                && validateYear(fields["iyr"]!!, 2010, 2020)
-                && validateYear(fields["eyr"]!!, 2020, 2030)
-                && validateHeight(fields["hgt"]!!)
-                && validateHairColor(fields["hcl"]!!)
-                && validateEyeColor(fields["ecl"]!!)
-                && validatePID(fields["pid"]!!)
-        }
-        .toList()
-        .size
+        fields.keys.containsAll(required)
+            && validateYear(fields["byr"]!!, 1920, 2002)
+            && validateYear(fields["iyr"]!!, 2010, 2020)
+            && validateYear(fields["eyr"]!!, 2020, 2030)
+            && validateHeight(fields["hgt"]!!)
+            && validateHairColor(fields["hcl"]!!)
+            && validateEyeColor(fields["ecl"]!!)
+            && validatePID(fields["pid"]!!)
+    }
+    .toList()
+    .size
 }
 
 fun validateYear(input: String, min: Int, max: Int): Boolean {

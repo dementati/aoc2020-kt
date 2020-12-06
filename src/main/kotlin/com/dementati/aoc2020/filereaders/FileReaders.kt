@@ -1,4 +1,4 @@
-package com.dementati.aoc2015
+package com.dementati.aoc2020.filereaders
 
 import java.io.File
 
@@ -18,4 +18,12 @@ fun inputAsLines(day: Int): List<String> {
 fun inputAsLines(day: Int, name: String): List<String> {
     val path = "input/day$day/$name.txt"
     return File(path).readLines()
+}
+
+fun inputAsLineGroups(day: Int): List<String> {
+    return inputAsLineGroups(day, "input")
+}
+
+fun inputAsLineGroups(day: Int, name: String): List<String> {
+    return inputAsString(day, name).trim().split("""\r\n\r\n|\n\n""".toRegex())
 }

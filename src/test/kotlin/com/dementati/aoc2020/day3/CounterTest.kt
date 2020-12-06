@@ -1,6 +1,6 @@
 package com.dementati.aoc2020.day3
 
-import com.dementati.aoc2015.inputAsLines
+import com.dementati.aoc2020.filereaders.inputAsLines
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -104,7 +104,7 @@ class CounterTest {
         ))
     }
 
-    fun verify(expectedCount: Int, slope: Pair<Int, Int>, lines: List<String>) {
+    fun verify(expectedCount: Long, slope: Pair<Int, Int>, lines: List<String>) {
         // WHEN
         val count = countTrees(lines,slope.first, slope.second)
 
