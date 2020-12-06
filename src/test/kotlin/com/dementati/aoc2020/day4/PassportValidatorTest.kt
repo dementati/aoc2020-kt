@@ -19,4 +19,7 @@ class PassportValidatorTest {
     fun testExample2() {
         assertEquals(4, countValidPassports2(inputAsString(4, "example2")))
     }
+
+    @Test
+    fun testSolution2() {}
 }
