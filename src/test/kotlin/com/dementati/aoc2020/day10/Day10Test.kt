@@ -1,8 +1,7 @@
 package com.dementati.aoc2020.day10
 
 import com.dementati.aoc2020.filereaders.inputAsIntegers
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class Day10Test {
@@ -29,5 +28,10 @@ class Day10Test {
     @Test
     fun sanityCheck() {
         assertTrue(1000_000_000_000 < solveStar2(inputAsIntegers(10)))
+    }
+
+    @Test
+    fun sanityCheck2() {
+        assertNotEquals(2071986176, solveStar2(inputAsIntegers(10)))
     }
 }
