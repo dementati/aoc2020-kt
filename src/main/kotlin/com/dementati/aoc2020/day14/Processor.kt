@@ -21,23 +21,30 @@ fun parseMask(mask: String): Pair<Long, Long> {
     return andMask to orMask
 }
 
-fun parseQuantumMask(prefix: Long, mask: String): List<Long> {
-    val result: List<Long> = mutableListOf()
-
-    var newPrefix = prefix
-    for (it in mask) {
-        newPrefix = newPrefix shl 1
-        when (it) {
+fun applyQuantumMask(address: Long, index: Int, mask: String): Set<Long> {
+    var newAddress = address
+    var i = index
+    while (i != mask.length) {
+        val bi = mask.length - i - 1
+        val bm = (1L shl bi)
+        when (mask[i]) {
             '1' -> {
-                newPrefix = newPrefix or 1
+                newAddress = newAddress or bm
             }
             'X' -> {
-                return parseQuantumMask(newPrefix, mask)
+                val newAddress1 = newAddress or bm
+                val newAddress2 = newAddress and bm.inv()
+                return applyQuantumMask(newAddress1, i + 1, mask)
+                    .union(
+                        applyQuantumMask(newAddress2, i + 1, mask)
+                    )
             }
         }
+
+        i++
     }
 
-    return result
+    return setOf(newAddress)
 }
 
 fun applyMask(value: Long, mask: Pair<Long, Long>): Long {
@@ -66,6 +73,34 @@ fun solveStar1(lines: List<String>): Long {
                     val i = iStr.toLong()
                     val value = valueStr.toLong()
                     memory[i] = applyMask(value, mask)
+                }
+        }
+    }
+
+    return memory.values.sum()
+}
+
+fun solveStar2(lines: List<String>): Long {
+    val maskPattern = """mask = (\w+)""".toRegex()
+    val memPattern = """mem\[(\d+)\] = (\d+)""".toRegex()
+
+    var mask = ""
+    val memory = HashMap<Long, Long>()
+    lines.forEach {
+        if (maskPattern.matches(it)) {
+            maskPattern.matchEntire(it)
+                ?.destructured
+                ?.let { (maskStr) ->
+                    mask = maskStr
+                }
+        } else if (memPattern.matches(it)) {
+            memPattern.matchEntire(it)
+                ?.destructured
+                ?.let { (iStr, valueStr) ->
+                    val i = iStr.toLong()
+                    val value = valueStr.toLong()
+                    applyQuantumMask(i, 0, mask)
+                        .forEach { qi -> memory[qi] = value }
                 }
         }
     }

@@ -28,6 +28,14 @@ class Day14Test {
 
     @Test
     fun testApplyQuantumMask() {
-        assertEquals(listOf(0), applyQuantumMask(0, "0"))
+        assertEquals(
+            setOf(0b011010L, 0b011011L, 0b111010L, 0b111011L),
+            applyQuantumMask(0b101010, 0, "X1001X")
+        )
+    }
+
+    @Test
+    fun testExampleStar2() {
+        assertEquals(208, solveStar2(inputAsLines(14, "example2")))
     }
 }
