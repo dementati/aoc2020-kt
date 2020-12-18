@@ -14,54 +14,86 @@ fun eval(expr: Expr): Long = when(expr) {
 }
 
 fun eval(s: String): Long = eval(parse(s))
+fun eval2(s: String): Long = eval(parse2(s))
 
-fun parse(s: String): Expr {
-    """(\d+)""".toRegex().matchEntire(s)
-        ?.destructured
-        ?.also { (n) ->
-            return Const(n.toLong())
-        }
+fun parseTokens(s: String, parse: (String) -> Expr): Pair<MutableList<Expr>, MutableList<Char>> {
+    val operands = mutableListOf<Expr>()
+    val operators = mutableListOf<Char>()
+    var remaining = s
 
-    val (a, op, b) = if (s.last() == ')') {
-        val i = findMatchingBracket(s) ?: throw IllegalArgumentException("Couldn't parse: $s")
-
-        if (i == 1) {
-            return parse(s.substring(1, s.lastIndex))
-        }
-
-        try {
-            Triple(
-                parse(s.substring(0, i - 4)),
-                s.substring(i - 3, i - 2),
-                parse(s.substring(i, s.lastIndex)),
-            )
-        } catch(e: StringIndexOutOfBoundsException) {
-            throw IllegalArgumentException("Couldn't parse: $s")
-        }
-    } else {
-        """(.*) ([+*]) (\d+)""".toRegex().matchEntire(s)
+    while (remaining.isNotEmpty()) {
+        """(\d+)(.*)""".toRegex().matchEntire(remaining)
             ?.destructured
-            ?.let { (rest, op, n) -> Triple(parse(rest), op, Const(n.toLong())) }
-            ?: throw IllegalArgumentException("Couldn't parse: $s")
+            ?.also { (n, r) ->
+                operands.add(Const(n.toLong()))
+                remaining = r.trim()
+            }
+
+        if (remaining.startsWith("(")) {
+            val i = findMatchingBracket(remaining) ?: throw IllegalArgumentException("Couldn't parse: $remaining")
+            operands.add(parse(remaining.substring(1, i)))
+            remaining = remaining.substring(i + 1).trim()
+        }
+
+        if (remaining.isNotEmpty()) {
+            operators.add(remaining.first())
+            remaining = remaining.substring(1).trim()
+        }
     }
 
-    return when(op) {
-        "+" -> Sum(a, b)
-        "*" -> Product(a, b)
-        else -> throw IllegalArgumentException("Couldn't parse: $s")
-    }
+    return operands to operators
 }
 
+fun parse(s: String): Expr {
+    val (operands, operators) = parseTokens(s, ::parse)
+
+    while (operators.isNotEmpty()) {
+        val newOp = when (operators.first()) {
+            '+' -> Sum(operands.first(), operands[1])
+            '*' -> Product(operands.first(), operands[1])
+            else -> throw IllegalArgumentException("Invalid operator")
+        }
+        operands.removeFirst()
+        operands.removeFirst()
+        operands.add(0, newOp)
+        operators.removeFirst()
+
+    }
+
+    return operands[0]
+}
+
+fun parse2(s: String): Expr {
+    val (operands, operators) = parseTokens(s, ::parse2)
+
+    while (operators.isNotEmpty()) {
+        var i = operators.indexOf('+')
+        val newOp = if (i != -1) {
+            Sum(operands[i], operands[i + 1])
+        } else {
+            i = operators.indexOf('*')
+            Product(operands[i], operands[i + 1])
+        }
+
+        operands.removeAt(i)
+        operands.removeAt(i)
+        operands.add(i, newOp)
+        operators.removeAt(i)
+    }
+
+    return operands[0]
+}
+
+
 fun findMatchingBracket(s: String): Int? {
-    assert(s.last() == ')')
     var d = 0
-    s.reversed().forEachIndexed { i, c ->
+    s.forEachIndexed { i, c ->
         when (c) {
-            ')' -> d++
-            '(' -> {
+            '(' -> d++
+            ')' -> {
                 d--
                 if (d == 0) {
-                    return s.length - i
+                    return i
                 }
             }
         }
@@ -70,6 +102,10 @@ fun findMatchingBracket(s: String): Int? {
     return null
 }
 
-fun solveDay1(lines: List<String>): Long {
+fun solveStar1(lines: List<String>): Long {
     return lines.map { eval(it) }.sum()
+}
+
+fun solveStar2(lines: List<String>): Long {
+    return lines.map { eval2(it) }.sum()
 }
