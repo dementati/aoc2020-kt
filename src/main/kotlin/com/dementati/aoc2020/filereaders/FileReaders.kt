@@ -28,6 +28,15 @@ fun inputAsLineGroups(day: Int, name: String): List<String> {
     return inputAsString(day, name).trim().split("""\r\n\r\n|\n\n""".toRegex())
 }
 
+fun inputAsDividedLineGroups(day: Int): List<List<String>> {
+    return inputAsDividedLineGroups(day, "Input")
+}
+
+fun inputAsDividedLineGroups(day: Int, name: String): List<List<String>> {
+    return inputAsLineGroups(day, name)
+        .map { it.split("""\n|\r\n""".toRegex()) }
+}
+
 fun inputAsIntegers(day: Int): List<Int> {
     return inputAsIntegers(day, "input")
 }
