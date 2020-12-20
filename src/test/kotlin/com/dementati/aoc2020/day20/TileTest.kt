@@ -10,19 +10,19 @@ import org.junit.jupiter.api.Test
 class TileTest {
     @Test
     fun `get 1x1 empty`() {
-        val tile = Tile(listOf("."))
+        val tile = Tile(0L, listOf("."))
         assertFalse(tile.get(0, 0))
     }
 
     @Test
     fun `get 1x1 filled`() {
-        val tile = Tile(listOf("#"))
+        val tile = Tile(0L, listOf("#"))
         assertTrue(tile.get(0, 0))
     }
 
     @Test
     fun `get 2x2`() {
-        val tile = Tile(listOf(
+        val tile = Tile(0L, listOf(
             ".#",
             ".#"
         ))
@@ -34,11 +34,15 @@ class TileTest {
 
     @Test
     fun `get 2x2 flipped`() {
-        val tile = Tile(listOf(
-            ".#",
-            ".#"
-        ))
-        tile.flipped = true
+        val tile = Tile(
+            0L,
+            listOf(
+                ".#",
+                ".#"
+            ),
+            Rotation.D0,
+            true
+        )
         assertTrue(tile.get(0, 0))
         assertFalse(tile.get(1, 0))
         assertTrue(tile.get(0, 1))
@@ -47,11 +51,14 @@ class TileTest {
 
     @Test
     fun `get 2x2 rotated 90 degrees`() {
-        val tile = Tile(listOf(
-            "##",
-            ".."
-        ))
-        tile.rotation = Rotation.D90
+        val tile = Tile(
+            0L,
+            listOf(
+                "##",
+                ".."
+            ),
+            Rotation.D90
+        )
         assertFalse(tile.get(0, 0))
         assertTrue(tile.get(1, 0))
         assertFalse(tile.get(0, 1))
@@ -60,11 +67,14 @@ class TileTest {
 
     @Test
     fun `get 2x2 rotated 180 degrees`() {
-        val tile = Tile(listOf(
-            "##",
-            ".."
-        ))
-        tile.rotation = Rotation.D180
+        val tile = Tile(
+            0L,
+            listOf(
+                "##",
+                ".."
+            ),
+            Rotation.D180
+        )
         assertFalse(tile.get(0, 0))
         assertFalse(tile.get(1, 0))
         assertTrue(tile.get(0, 1))
@@ -73,11 +83,14 @@ class TileTest {
 
     @Test
     fun `get 2x2 rotated 270 degrees`() {
-        val tile = Tile(listOf(
-            "##",
-            ".."
-        ))
-        tile.rotation = Rotation.D270
+        val tile = Tile(
+            0L,
+            listOf(
+                "##",
+                ".."
+            ),
+            Rotation.D270,
+        )
         assertTrue(tile.get(0, 0))
         assertFalse(tile.get(1, 0))
         assertTrue(tile.get(0, 1))
@@ -86,12 +99,15 @@ class TileTest {
 
     @Test
     fun `get 2x2 flipped and rotated 90 degrees`() {
-        val tile = Tile(listOf(
-            "#.",
-            ".."
-        ))
-        tile.flipped = true
-        tile.rotation = Rotation.D90
+        val tile = Tile(
+            0L,
+            listOf(
+                "#.",
+                ".."
+            ),
+            Rotation.D90,
+            true,
+        )
         assertFalse(tile.get(0, 0))
         assertFalse(tile.get(1, 0))
         assertFalse(tile.get(0, 1))
@@ -100,12 +116,15 @@ class TileTest {
 
     @Test
     fun `get 2x2 flipped and rotated 180 degrees`() {
-        val tile = Tile(listOf(
-            "#.",
-            ".."
-        ))
-        tile.flipped = true
-        tile.rotation = Rotation.D180
+        val tile = Tile(
+            0L,
+            listOf(
+                "#.",
+                ".."
+            ),
+            Rotation.D180,
+            true,
+        )
         assertFalse(tile.get(0, 0))
         assertFalse(tile.get(1, 0))
         assertTrue(tile.get(0, 1))
@@ -114,12 +133,15 @@ class TileTest {
 
     @Test
     fun `get 2x2 flipped and rotated 270 degrees`() {
-        val tile = Tile(listOf(
-            "#.",
-            ".."
-        ))
-        tile.flipped = true
-        tile.rotation = Rotation.D270
+        val tile = Tile(
+            0L,
+            listOf(
+                "#.",
+                ".."
+            ),
+            Rotation.D270,
+            true,
+        )
         assertTrue(tile.get(0, 0))
         assertFalse(tile.get(1, 0))
         assertFalse(tile.get(0, 1))
@@ -128,13 +150,16 @@ class TileTest {
 
     @Test
     fun `get 3x3 flipped and rotated 90 degrees`() {
-        val tile = Tile(listOf(
-            "##.",
-            "...",
-            "..."
-        ))
-        tile.flipped = true
-        tile.rotation = Rotation.D90
+        val tile = Tile(
+            0L,
+            listOf(
+                "##.",
+                "...",
+                "..."
+            ),
+            Rotation.D90,
+            true,
+        )
         assertFalse(tile.get(2, 0))
         assertTrue(tile.get(2, 2))
         assertTrue(tile.get(2, 1))
@@ -142,12 +167,12 @@ class TileTest {
 
     @Test
     fun `match 2x2`() {
-        val tile1 = Tile(listOf(
+        val tile1 = Tile(0L, listOf(
             ".#",
             ".."
         ))
 
-        val tile2 = Tile(listOf(
+        val tile2 = Tile(0L, listOf(
             "#.",
             ".."
         ))
@@ -160,19 +185,24 @@ class TileTest {
 
     @Test
     fun `match 2x2 flipped and rotated`() {
-        val tile1 = Tile(listOf(
-            ".#",
-            ".."
-        ))
+        val tile1 = Tile(
+            0L,
+            listOf(
+                ".#",
+                ".."
+            ),
+            Rotation.D90,
+            true
+        )
 
-        tile1.flipped = true
-        tile1.rotation = Rotation.D90
-
-        val tile2 = Tile(listOf(
-            "#.",
-            ".."
-        ))
-        tile2.rotation = Rotation.D180
+        val tile2 = Tile(
+            0L,
+            listOf(
+                "#.",
+                ".."
+            ),
+            Rotation.D180,
+        )
 
         assertFalse(tile1.matches(tile2, Direction.RIGHT))
         assertFalse(tile1.matches(tile2, Direction.LEFT))
@@ -182,13 +212,13 @@ class TileTest {
 
     @Test
     fun `match 3x3`() {
-        val tile1 = Tile(listOf(
+        val tile1 = Tile(0L, listOf(
             ".##",
             "...",
             "#.#"
         ))
 
-        val tile2 = Tile(listOf(
+        val tile2 = Tile(0L, listOf(
             "#.#",
             "...",
             "#.."
