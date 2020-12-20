@@ -79,6 +79,15 @@ class Tile constructor(
         }
 }
 
+fun getNeighbour(pos: Pos, dir: Direction): Pos {
+    return when (dir) {
+        Direction.LEFT -> pos.first - 1L to pos.second
+        Direction.RIGHT -> pos.first + 1L to pos.second
+        Direction.UP -> pos.first to pos.second - 1L
+        Direction.DOWN -> pos.first to pos.second + 1L
+    }
+}
+
 class TileMap constructor(tiles: List<Tile>) {
     val tiles = tiles.toMutableList()
     val map = mutableMapOf<Pos, Tile>()
@@ -106,17 +115,19 @@ class TileMap constructor(tiles: List<Tile>) {
         while (border.isNotEmpty()) {
             val (pos, dir) = border.removeAt(0)
 
-            val pos2 = when (dir) {
-                Direction.LEFT -> pos.first - 1L to pos.second
-                Direction.RIGHT -> pos.first + 1L to pos.second
-                Direction.UP -> pos.first to pos.second - 1L
-                Direction.DOWN -> pos.first to pos.second + 1L
-            }
-
-            tiles.forEachIndexed { i, tile2 ->
-                canPlace(tile2, pos2)?.also { placable ->
+            val candidatePos = getNeighbour(pos, dir)
+            tiles.forEachIndexed { i, candidateTile ->
+                findPlacableOrientation(candidateTile, candidatePos)?.also { orientedCandidateTile ->
                     tiles.removeAt(i)
-                    map[pos2] = placable
+                    map[candidatePos] = orientedCandidateTile
+
+                    Direction.values().forEach { dir ->
+                        val nPos = getNeighbour(candidatePos, dir)
+                        if (!map.containsKey(nPos)) {
+                            border.add(candidatePos to dir)
+                        }
+                    }
+
                     return
                 }
             }
@@ -125,18 +136,12 @@ class TileMap constructor(tiles: List<Tile>) {
         throw IllegalArgumentException("No solution found")
     }
 
-    fun canPlace(tile: Tile, pos: Pos): Tile? {
-        val neighbours = listOf(
-            Direction.LEFT to (pos.first - 1L to pos.second),
-            Direction.RIGHT to (pos.first + 1L to pos.second),
-            Direction.UP to (pos.first to pos.second - 1L),
-            Direction.DOWN to (pos.first to pos.second + 1L),
-        )
-
+    fun findPlacableOrientation(tile: Tile, pos: Pos): Tile? {
         tile.orientations.forEach { candidate ->
-            val fits = neighbours.all { (nDir, nPos) ->
+            val fits = Direction.values().all { dir ->
+                val nPos = getNeighbour(pos, dir)
                 map[nPos]
-                    ?.let { neighbour -> candidate.matches(neighbour, nDir) }
+                    ?.let { neighbour -> candidate.matches(neighbour, dir) }
                     ?: true
             }
 
@@ -146,5 +151,40 @@ class TileMap constructor(tiles: List<Tile>) {
         }
 
         return null
+    }
+
+    fun solve() {
+        while (!done) {
+            place()
+        }
+    }
+
+    val cornerIds: List<Long>
+        get() {
+            val minX = map.keys.minOf { (x, _) -> x }
+            val minY = map.keys.minOf { (_, y) -> y}
+            val maxX = map.keys.maxOf { (x, _) -> x }
+            val maxY = map.keys.maxOf { (_, y) -> y }
+
+            return listOf(
+                map[minX to minY]?.id ?: throw IllegalArgumentException("No solution found"),
+                map[minX to maxY]?.id ?: throw IllegalArgumentException("No solution found"),
+                map[maxX to minY]?.id ?: throw IllegalArgumentException("No solution found"),
+                map[maxX to maxY]?.id ?: throw IllegalArgumentException("No solution found"),
+            )
+        }
+
+    val star1Solution: Long
+        get() = cornerIds.reduce { a, b -> a * b }
+}
+
+fun parseInput(groups: List<List<String>>): List<Tile> {
+    return groups.map { lines ->
+        val id = """Tile (\d+):""".toRegex().matchEntire(lines[0])
+            ?.destructured
+            ?.let { (n) -> n.toLong() }
+            ?: throw IllegalArgumentException("Couldn't parse: ${lines[0]}")
+
+        Tile(id,lines.drop(1))
     }
 }
