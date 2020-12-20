@@ -49,6 +49,10 @@ class Tile constructor(
 
     val lastIndex = size - 1
 
+    fun get(pos: Pos): Boolean? {
+        return get(pos.first, pos.second)
+    }
+
     fun get(x: Long, y: Long): Boolean? {
         var xm: Double = x.toDouble()
         var ym: Double = y.toDouble()
@@ -117,6 +121,58 @@ class Tile constructor(
             }
             println()
         }
+    }
+
+    fun countSeaMonsters(): Long {
+        var count = 0L
+
+        (0 until size).forEach { y ->
+            (0 until size).forEach { x ->
+                val pos = x to y
+                if (isSeaMonster(pos)) {
+                    count++
+                }
+            }
+        }
+
+        return count
+    }
+
+    fun isSeaMonster(pos: Pos): Boolean {
+        val spec = listOf(
+            "..................#.",
+            "#....##....##....###",
+            ".#..#..#..#..#..#...",
+        )
+
+        spec.indices.forEach { y ->
+            spec[0].indices.forEach { x ->
+                val s = spec[y][x]
+                val tPos = pos.first + x to pos.second + y
+
+                if (s == '#') {
+                    if (get(tPos) == null) {
+                        return false
+                    }
+
+                    if (!get(tPos)!!) {
+                        return false
+                    }
+                }
+            }
+        }
+
+        return true
+    }
+
+    fun countAllSeamonsters(): Long {
+        return orientations.map { it.countSeaMonsters() }.sum()
+    }
+
+    fun solveStar2(): Long {
+        val waves = data.values.count { it == '#' }
+        val seamonsters = countAllSeamonsters()
+        return waves - seamonsters * 15
     }
 }
 

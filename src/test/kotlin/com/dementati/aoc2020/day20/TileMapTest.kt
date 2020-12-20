@@ -52,9 +52,8 @@ class TileMapTest {
         assertEquals(20899048083289L, tileMap.star1Solution)
 
         val image = tileMap.image
-        image.flipped = true
-        image.rotation = Rotation.D180
-        image.draw()
+        assertEquals(2, image.countAllSeamonsters())
+        assertEquals(273, image.solveStar2())
     }
 
     @Test
