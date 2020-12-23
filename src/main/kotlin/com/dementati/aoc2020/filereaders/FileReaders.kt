@@ -29,7 +29,7 @@ fun inputAsLineGroups(day: Int, name: String): List<String> {
 }
 
 fun inputAsDividedLineGroups(day: Int): List<List<String>> {
-    return inputAsDividedLineGroups(day, "Input")
+    return inputAsDividedLineGroups(day, "input")
 }
 
 fun inputAsDividedLineGroups(day: Int, name: String): List<List<String>> {
